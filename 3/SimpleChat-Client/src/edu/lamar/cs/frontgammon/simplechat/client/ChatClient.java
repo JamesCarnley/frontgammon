@@ -9,7 +9,7 @@
 
 // This file contains material supporting section 3.7 of the textbook:
 // "Object Oriented Software Engineering" and is issued under the open-source
-// license found at www.lloseng.com 
+// license found at www.lloseng.com
 
 package edu.lamar.cs.frontgammon.simplechat.client;
 
@@ -25,78 +25,74 @@ import java.io.*;
  * @author Fran&ccedil;ois B&eacute;langer
  * @version July 2000
  */
-public class ChatClient extends AbstractClient
-{
-  //Instance variables **********************************************
-  
-  /**
-   * The interface type variable.  It allows the implementation of 
-   * the display method in the client.
-   */
-  ChatIF clientUI; 
-
-  
-  //Constructors ****************************************************
-  
-  /**
-   * Constructs an instance of the chat client.
-   *
-   * @param host The server to connect to.
-   * @param port The port number to connect on.
-   * @param clientUI The interface type variable.
-   */
-  
-  public ChatClient(String host, int port, ChatIF clientUI) 
-    throws IOException 
-  {
-    super(host, port); //Call the superclass constructor
-    this.clientUI = clientUI;
-    openConnection();
-  }
-
-  
-  //Instance methods ************************************************
+public class ChatClient extends AbstractClient {
+    //Instance variables **********************************************
     
-  /**
-   * This method handles all data that comes in from the server.
-   *
-   * @param msg The message from the server.
-   */
-  public void handleMessageFromServer(Object msg) 
-  {
-    clientUI.display(msg.toString());
-  }
-
-  /**
-   * This method handles all data coming from the UI            
-   *
-   * @param message The message from the UI.    
-   */
-  public void handleMessageFromClientUI(String message)
-  {
-    try
-    {
-      sendToServer(message);
+    /**
+     * The interface type variable.  It allows the implementation of
+     * the display method in the client.
+     */
+    ChatIF clientUI;
+    
+    
+    //Constructors ****************************************************
+    
+    /**
+     * Constructs an instance of the chat client.
+     *
+     * @param host The server to connect to.
+     * @param port The port number to connect on.
+     * @param clientUI The interface type variable.
+     */
+    
+    public ChatClient(String host, int port, ChatIF clientUI)
+    throws IOException {
+        super(host, port); //Call the superclass constructor
+        this.clientUI = clientUI;
+        openConnection();
     }
-    catch(IOException e)
-    {
-      clientUI.display
-        ("Could not send message to server.  Terminating client.");
-      quit();
+    
+    
+    //Instance methods ************************************************
+    
+    /**
+     * This method handles all data that comes in from the server.
+     *
+     * @param msg The message from the server.
+     */
+    public void handleMessageFromServer(Object msg) {
+        clientUI.display(msg.toString());
     }
-  }
-  
-  /**
-   * This method terminates the client.
-   */
-  public void quit()
-  {
-    try
-    {
-      closeConnection();
+    
+    /**
+     * This method handles all data coming from the UI
+     *
+     * @param message The message from the UI.
+     */
+    public void handleMessageFromClientUI(String message) {
+        try {
+            sendToServer(message);
+        } catch(IOException e) {
+            clientUI.display
+                    ("Could not send message to server.  Terminating client.");
+            quit();
+        }
     }
-    catch(IOException e) {}
-    System.exit(0);
-  }
+    
+    // E49 - Responding to server shutdown
+    protected void connectionException (Exception exception) {
+        System.out.println("The server has shut down. The client will now quit.");
+        quit();
+    }
+    
+    /**
+     * This method terminates the client.
+     */
+    public void quit() {
+        try {
+            closeConnection();
+        } catch(IOException e) {}
+        System.exit(0);
+    }
 }
 //End of ChatClient class
