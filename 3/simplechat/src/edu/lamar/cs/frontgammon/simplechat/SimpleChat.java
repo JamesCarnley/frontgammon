@@ -9,8 +9,6 @@
 
 package edu.lamar.cs.frontgammon.simplechat;
 
-import com.lloseng.ocsf.client.AbstractClient;
-
 /**
  *
  * @author James
@@ -21,7 +19,7 @@ public class SimpleChat {
     public SimpleChat() {
     }
     
-    public static void main()
+    public static void main(String[] args)
     {
         System.out.println("Starting SimpleChat...");
         System.out.println("Exitting SimpleChat...");
