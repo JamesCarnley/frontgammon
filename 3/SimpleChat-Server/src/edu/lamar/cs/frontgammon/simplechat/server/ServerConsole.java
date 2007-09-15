@@ -19,32 +19,30 @@ import java.util.regex.Pattern;
  *
  * @author Daniel Schultze
  */
-public class ServerConsole implements Runnable
-{
+public class ServerConsole implements Runnable {
     private boolean readyToQuit;
     private EchoServer server;
     
     // #quit
-    private static final Pattern QUIT = Pattern.compile ("^\\#quit\\s*.*$");
+    private static final Pattern QUIT = Pattern.compile("^\\#quit\\s*.*$");
     // #stop
-    private static final Pattern STOP = Pattern.compile ("^\\#stop\\s*.*$");
+    private static final Pattern STOP = Pattern.compile("^\\#stop\\s*.*$");
     // #close
-    private static final Pattern CLOSE = Pattern.compile ("^\\#close\\s*.*$");
+    private static final Pattern CLOSE = Pattern.compile("^\\#close\\s*.*$");
     // #setport
-    private static final Pattern SETPORT = Pattern.compile ("^\\#setport (\\d+)\\s*.*$");
+    private static final Pattern SETPORT = Pattern.compile("^\\#setport (\\d+)\\s*.*$");
     // #start
-    private static final Pattern START = Pattern.compile ("^\\#start\\s*.*$");
+    private static final Pattern START = Pattern.compile("^\\#start\\s*.*$");
     // #getport
-    private static final Pattern GETPORT = Pattern.compile ("^\\#getport\\s*.*$");
+    private static final Pattern GETPORT = Pattern.compile("^\\#getport\\s*.*$");
     
     
-    /** 
+    /**
      * Creates a new instance of ServerConsole
      *
      * @param e the EchoServer being used.
      */
-    public ServerConsole (EchoServer e)
-    {
+    public ServerConsole(EchoServer e) {
         server = e;
         readyToQuit = false;
     }
@@ -52,22 +50,17 @@ public class ServerConsole implements Runnable
     /**
      * The main Thread loop for waiting for user input.
      */
-    public void run ()
-    {
-        Scanner input = new Scanner (System.in);
+    public void run() {
+        Scanner input = new Scanner(System.in);
         String line;
         
-        while (!readyToQuit)
-        {
-            try
-            {
-                line = waitForInput (input);
-                userInput (line);
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace ();
-                System.out.println (e);
+        while (!readyToQuit) {
+            try {
+                line = waitForInput(input);
+                userInput(line);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println(e);
             }
         }
     }
@@ -75,55 +68,39 @@ public class ServerConsole implements Runnable
     /**
      * Method that waits for console input.
      */
-    public String waitForInput (Scanner input)
-    {
-        return input.nextLine ();
+    public String waitForInput(Scanner input) {
+        return input.nextLine();
     }
     
     /**
      * This method processes the user input.
-     * 
+     *
      * @param input the user's input.
      */
-    public void userInput (String input)
-    {
-        if (input.startsWith ("#"))
-        {
+    public void userInput(String input) {
+        if (input.startsWith("#")) {
             Matcher paramMatcher;
             
-            if (QUIT.matcher (input).matches ())
+            if (QUIT.matcher(input).matches()) {
+                commandQuit();
+            } else if (STOP.matcher(input).matches()) {
+                commandStop();
+            } else if (CLOSE.matcher(input).matches()) {
+                commandClose();
+            } else if ((paramMatcher = SETPORT.matcher(input)).matches()) {
+                commandSetPort(paramMatcher.group(1));
+            } else if (START.matcher(input).matches()) {
+                commandStart();
+            } else if (GETPORT.matcher(input).matches()) {
+                commandGetPort();
+            } else //No command was matched
             {
-                commandQuit ();
+                userOutputToUI("Command not found.\n");
             }
-            else if (STOP.matcher (input).matches ())
-            {
-                commandStop ();
-            }
-            else if (CLOSE.matcher (input).matches ())
-            {
-                commandClose ();
-            }
-            else if ((paramMatcher = SETPORT.matcher (input)).matches ())
-            {
-                commandSetPort (paramMatcher.group (1));
-            }
-            else if (START.matcher (input).matches ())
-            {
-                commandStart ();
-            }
-            else if (GETPORT.matcher (input).matches ())
-            {
-                commandGetPort ();
-            }
-            else //No command was matched
-            {
-                userOutputToUI ("Command not found.\n");
-            }
-        }
-        else //send a line of text
+        } else //send a line of text
         {
             input += "\n";
-            userOutput (input);
+            userOutput(input);
         }
     }
     
@@ -132,9 +109,8 @@ public class ServerConsole implements Runnable
      *
      * @param output string to send
      */
-    public void userOutputToUI (String output)
-    {
-        System.out.print (output);
+    public void userOutputToUI(String output) {
+        System.out.print(output);
     }
     
     /**
@@ -142,9 +118,8 @@ public class ServerConsole implements Runnable
      *
      * @param output string to send
      */
-    public void userOutputToClients (String output)
-    {
-        server.sendToAllClients (output);
+    public void userOutputToClients(String output) {
+        server.sendToAllClients(output);
     }
     
     /**
@@ -152,84 +127,66 @@ public class ServerConsole implements Runnable
      *
      * @param output string to send
      */
-    public void userOutput (String output)
-    {
+    public void userOutput(String output) {
         output = "SERVER MSG> " + output;
-        userOutputToUI (output);
-        userOutputToClients (output);
+        userOutputToUI(output);
+        userOutputToClients(output);
     }
     
-    private void commandStop ()
-    {
-        server.stopListening ();
+    private void commandStop() {
+        server.stopListening();
     }
     
-    private void commandStart ()
-    {
-        try
-        {
-            server.listen ();
-        } catch (IOException ex)
-        {
+    private void commandStart() {
+        try {
+            server.listen();
+        } catch (IOException ex) {
             ex.printStackTrace();
-            userOutputToUI ("There was an error while starting to listen again: " + ex.toString () + "\n");
+            userOutputToUI("There was an error while starting to listen again: " + ex.toString() + "\n");
         }
     }
     
     /**
      * @param input port number to parse in string form.
      */
-    private void commandSetPort (String input)
-    {
-        if (server.isListening ())
-        {
-            userOutputToUI ("Server is not stopped. The listening port cannot be changed.\n");
-        }
-        else
-        {
+    private void commandSetPort(String input) {
+        if (server.isListening()) {
+            userOutputToUI("Server is not stopped. The listening port cannot be changed.\n");
+        } else {
             int port;
             
-            try
-            {
-                port = Integer.parseInt (input);
+            try {
+                port = Integer.parseInt(input);
                 
                 if (port < 0 || port > 65535)
-                    throw new NumberFormatException ();
+                    throw new NumberFormatException();
                 
-                server.setPort (port);
-            }
-            catch (NumberFormatException e)
-            {
-                userOutputToUI ("Bad number was specified, try 0-65535");
+                server.setPort(port);
+            } catch (NumberFormatException e) {
+                userOutputToUI("Bad number was specified, try 0-65535");
             }
         }
     }
     
-    private void commandClose ()
-    {
-        try
-        {
-            server.close ();
-        }
-        catch (IOException ex)
-        {
+    private void commandClose() {
+        try {
+            server.close();
+        } catch (IOException ex) {
             //nothing is needed to be done.
         }
     }
     
-    private void commandQuit ()
-    {
-        userOutput ("The server is quitting.\n");
-        commandClose ();
-        System.exit (0);
+    private void commandQuit() {
+        userOutput("The server is quitting.\n");
+        commandClose();
+        System.exit(0);
     }
     
-    private void commandGetPort ()
-    {
+    private void commandGetPort() {
         int port;
         
-        port = server.getPort ();
+        port = server.getPort();
         
-        userOutputToUI ("The current listening port is: " + port + ".\n");
+        userOutputToUI("The current listening port is: " + port + ".\n");
     }
 }
