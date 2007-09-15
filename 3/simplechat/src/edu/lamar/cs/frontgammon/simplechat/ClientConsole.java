@@ -126,6 +126,7 @@ public class ClientConsole implements ChatIF
       host = "localhost";
     }
     
+    // E49 - Set the port from command line argument.
     try
     {
         port = Integer.parseInt(args[1]);
