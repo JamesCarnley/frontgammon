@@ -15,6 +15,7 @@ package edu.lamar.cs.frontgammon.simplechat.server;
 
 import java.io.*;
 import com.lloseng.ocsf.server.*;
+import edu.lamar.cs.frontgammon.simplechat.server.ServerConsole;
 
 /**
  * This class overrides some of the methods in the abstract
@@ -26,7 +27,8 @@ import com.lloseng.ocsf.server.*;
  * @author Paul Holden
  * @version July 2000
  */
-public class EchoServer extends AbstractServer {
+public class EchoServer extends AbstractServer
+{
     //Class variables *************************************************
     
     /**
@@ -41,8 +43,9 @@ public class EchoServer extends AbstractServer {
      *
      * @param port The port number to connect on.
      */
-    public EchoServer(int port) {
-        super(port);
+    public EchoServer (int port)
+    {
+        super (port);
     }
     
     
@@ -54,35 +57,40 @@ public class EchoServer extends AbstractServer {
      * @param msg The message received from the client.
      * @param client The connection from which the message originated.
      */
-    public void handleMessageFromClient(Object msg, ConnectionToClient client) {
-        System.out.println("Message received: " + msg + " from " + client);
-        this.sendToAllClients(msg);
+    public void handleMessageFromClient (Object msg, ConnectionToClient client)
+    {
+        System.out.println ("Message received: " + msg + " from " + client);
+        this.sendToAllClients (msg);
     }
     
     /**
      * This method overrides the one in the superclass.  Called
      * when the server starts listening for connections.
      */
-    protected void serverStarted() {
-        System.out.println("Server listening for connections on port " + getPort());
+    protected void serverStarted ()
+    {
+        System.out.println ("Server listening for connections on port " + getPort ());
     }
     
     /**
      * This method overrides the one in the superclass.  Called
      * when the server stops listening for connections.
      */
-    protected void serverStopped() {
-        System.out.println("Server has stopped listening for connections.");
+    protected void serverStopped ()
+    {
+        System.out.println ("Server has stopped listening for connections.");
     }
     
     // E49 - Print message for client connects and disconnects
-    protected void clientConnected(ConnectionToClient client) {
-        System.out.println("Client connected: " + client.getInetAddress().getHostAddress());
+    protected void clientConnected (ConnectionToClient client)
+    {
+        System.out.println ("Client connected: " + client.getInetAddress ().getHostAddress ());
     }
     
     // This currently does not fire due to horrible framework bugs.
-    protected void clientDisconnected(ConnectionToClient client) {
-        System.out.println("Client disconnected: " + client.getInetAddress().getHostAddress());
+    protected void clientDisconnected (ConnectionToClient client)
+    {
+        System.out.println ("Client disconnected: " + client.getInetAddress ().getHostAddress ());
     }
     
     //Class methods ***************************************************
@@ -94,21 +102,32 @@ public class EchoServer extends AbstractServer {
      * @param args[0] The port number to listen on.  Defaults to 5555
      *          if no argument is entered.
      */
-    public static void main(String[] args) {
+    public static void main (String[] args)
+    {
+        
         int port = 0; //Port to listen on
         
-        try {
-            port = Integer.parseInt(args[0]); //Get port from command line
-        } catch(Throwable t) {
+        try
+        {
+            port = Integer.parseInt (args[0]); //Get port from command line
+        }
+        catch(Throwable t)
+        {
             port = DEFAULT_PORT; //Set port to 5555
         }
         
-        EchoServer sv = new EchoServer(port);
+        EchoServer sv = new EchoServer (port);
+        ServerConsole sc = new ServerConsole (sv);
+        Thread scThread = new Thread (sc);
         
-        try {
-            sv.listen(); //Start listening for connections
-        } catch (Exception ex) {
-            System.out.println("ERROR - Could not listen for clients!");
+        try
+        {
+            sv.listen (); //Start listening for connections
+            scThread.start ();
+        }
+        catch (Exception ex)
+        {
+            System.out.println ("ERROR - Could not listen for clients!");
         }
     }
 }
