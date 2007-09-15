@@ -7,7 +7,7 @@
  * and open the template in the editor.
  */
 
-package edu.lamar.cs.frontgammon.simplechat;
+package edu.lamar.cs.frontgammon.simplechat.server;
 
 // This file contains material supporting section 3.7 of the textbook:
 // "Object Oriented Software Engineering" and is issued under the open-source
