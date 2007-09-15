@@ -195,6 +195,22 @@ public class ConnectionToClient extends Thread
         return savedInfo.get (infoType);
     }
     
+    /**
+     * Tests active connection to client.
+     * 
+     * @author Daniel Schultze
+     * @return True if connection to client is active, false otherwise.
+     */
+    public boolean isConnected ()
+    {
+        boolean result = false;
+        
+        if (clientSocket != null)
+            clientSocket.isConnected ();
+        
+        return result;
+    }
+    
 // RUN METHOD -------------------------------------------------------
     
     /**
@@ -205,6 +221,14 @@ public class ConnectionToClient extends Thread
     final public void run ()
     {
         server.clientConnected (this);
+        /* 
+         * Daniel Schultze
+         * Adding address information so that it can be called at a later time.
+         */
+        setInfo ("Address", clientSocket.getInetAddress ().toString ());
+        /*
+         *end 
+         */
         
         // This loop reads the input stream and responds to messages
         // from clients
