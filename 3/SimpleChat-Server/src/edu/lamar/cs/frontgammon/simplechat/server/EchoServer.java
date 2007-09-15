@@ -77,12 +77,12 @@ public class EchoServer extends AbstractServer {
     
     // E49 - Print message for client connects and disconnects
     protected void clientConnected(ConnectionToClient client) {
-        System.out.println("Client connected: " + client.getInetAddress());
+        System.out.println("Client connected: " + client.getInetAddress().getHostAddress());
     }
     
     // This currently does not fire due to horrible framework bugs.
     protected void clientDisconnected(ConnectionToClient client) {
-        System.out.println("Client disconnected: " + client.getInetAddress());
+        System.out.println("Client disconnected: " + client.getInetAddress().getHostAddress());
     }
     
     //Class methods ***************************************************
