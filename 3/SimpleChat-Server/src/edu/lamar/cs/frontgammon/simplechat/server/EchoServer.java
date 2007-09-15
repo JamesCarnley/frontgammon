@@ -75,10 +75,12 @@ public class EchoServer extends AbstractServer {
         System.out.println("Server has stopped listening for connections.");
     }
     
+    // E49 - Print message for client connects and disconnects
     protected void clientConnected(ConnectionToClient client) {
         System.out.println("Client connected: " + client.getInetAddress());
     }
     
+    // This currently does not fire due to horrible framework bugs.
     protected void clientDisconnected(ConnectionToClient client) {
         System.out.println("Client disconnected: " + client.getInetAddress());
     }
