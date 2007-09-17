@@ -16,6 +16,8 @@ package edu.lamar.cs.frontgammon.simplechat.server;
 import java.io.*;
 import com.lloseng.ocsf.server.*;
 import edu.lamar.cs.frontgammon.simplechat.server.ServerConsole;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This class overrides some of the methods in the abstract
@@ -34,6 +36,7 @@ public class EchoServer extends AbstractServer {
      * The default port to listen on.
      */
     final public static int DEFAULT_PORT = 5555;
+    final public static Pattern LOGIN = Pattern.compile ("^\\#login\\s([A-Za-z]+)\\s*");
     
     //Constructors ****************************************************
     
@@ -55,9 +58,66 @@ public class EchoServer extends AbstractServer {
      * @param msg The message received from the client.
      * @param client The connection from which the message originated.
      */
-    public void handleMessageFromClient(Object msg, ConnectionToClient client) {
-        System.out.println("Message received: " + msg + " from " + client);
-        this.sendToAllClients(msg);
+    //E51 LoginID
+    public void handleMessageFromClient(Object msg, ConnectionToClient client){
+        
+        
+        if (msg.toString ().startsWith ("#"))
+        {
+            Matcher m = null;
+            
+            if ((m = LOGIN.matcher (msg.toString ())).matches ())
+            {
+                client.setInfo ("LoginID", m.group (1));
+            }
+            else
+            {
+                try
+                {
+                    client.sendToClient ("Server MSG> Command to server is not recognized.\n");
+                    
+                    Object o = client.getInfo ("LoginID");
+            
+                    if (null == o)
+                    {
+                        try
+                        {
+                            client.sendToClient ("Server MSG> You must send a LoginID command as your first communication");
+                            client.close ();
+                        } 
+                        catch (IOException ex)
+                        {
+
+                        }
+                    }
+                }
+                catch (Exception e)
+                {}
+            }
+            
+        }
+        else
+        {
+            Object o = client.getInfo ("LoginID");
+            
+            if (null != o)
+            {
+                System.out.println(client.getInfo ("LoginID") + ": " + msg);
+                this.sendToAllClients(client.getInfo ("LoginID") + ": " + msg);
+            }
+            else
+            {
+                try
+                {
+                    client.sendToClient ("Server MSG> You must send a LoginID command as your first communication");
+                    client.close ();
+                } 
+                catch (IOException ex)
+                {
+                    
+                }
+            }
+        }
     }
     
     /**
