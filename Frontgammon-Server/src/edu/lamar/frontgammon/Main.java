@@ -13,7 +13,6 @@ package edu.lamar.frontgammon;
  *
  * @author Nitesh
  */
-import java.io.IOException;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
