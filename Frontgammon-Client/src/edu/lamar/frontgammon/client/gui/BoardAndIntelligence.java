@@ -18,59 +18,49 @@
  *
  * Created on November 4, 2007, 10:18 PM
  */
-
 package edu.lamar.frontgammon.client.gui;
-
 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
-import java.awt.RenderingHints;
-import java.util.ArrayList;
-
 import edu.lamar.frontgammon.client.*;
 import edu.lamar.frontgammon.game.*;
 import edu.lamar.frontgammon.protocol.*;
 
 import java.io.IOException;
+
 /**
  *
  * @author  Nitesh
  */
 public class BoardAndIntelligence extends javax.swing.JPanel {
-    
+
     private boolean allowMovement = true;
-    public void allowMovement(boolean allowMovement)
-    {
-        //this.allowMovement = allowMovement;
+
+    public void allowMovement(boolean allowMovement) {
+    //this.allowMovement = allowMovement;
     }
-    
     public Client cli;
     public MessageBox msgBox;
-    
-       GameState gs;
-    
+    GameState gs;
     int[] baseX = new int[28];
-    
     int tW = -1;
     int tH = -1;
-    
-    
     boolean isDragging = false;
     Checker currChecker = null;
     int currCheckerID = -1;
     int dynaX = -1;
     int dynaY = -1;
+
     /** Creates new form BoardAndIntelligence */
     public BoardAndIntelligence() {
         gs = new GameState(true);
-        initComponents();                
-       
+        initComponents();
+
     }
-    
-    
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -107,11 +97,9 @@ public class BoardAndIntelligence extends javax.swing.JPanel {
             .addGap(0, 300, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
-
     private void formMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseMoved
 // TODO add your handling code here:
-        if(isDragging && allowMovement)
-        {
+        if (isDragging && allowMovement) {
             dynaX = evt.getX();
             dynaY = evt.getY();
             repaint();
@@ -119,26 +107,23 @@ public class BoardAndIntelligence extends javax.swing.JPanel {
     }//GEN-LAST:event_formMouseMoved
 
     private void formMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseDragged
-       if(currChecker != null  && allowMovement)
-       {
+        if (currChecker != null && allowMovement) {
             isDragging = true;
             dynaX = evt.getX();
             dynaY = evt.getY();
             repaint();
-       }
+        }
     }//GEN-LAST:event_formMouseDragged
 
     private void formMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseReleased
-        if(isDragging  && allowMovement)
-        {
+        if (isDragging && allowMovement) {
             isDragging = false;
-            
-            int pointID = getPointID(evt.getX(),evt.getY());
-            if(pointID == -1)
+
+            int pointID = getPointID(evt.getX(), evt.getY());
+            if (pointID == -1) {
                 isDragging = true;
-            else if(pointID != currChecker.pointID)
-            {
-                
+            } else if (pointID != currChecker.pointID) {
+
                 //valid point verfiy from server if allowed to move
                 System.out.println("Calling Verification");
                 Object[] parm = new Object[5];
@@ -147,330 +132,306 @@ public class BoardAndIntelligence extends javax.swing.JPanel {
                 parm[2] = currCheckerID;
                 parm[3] = currChecker.pointID;
                 parm[4] = pointID;
-                 
+
                 currChecker = null;
                 currCheckerID = -1;
-                Message msg = new Message(Command.MoveChecker,parm);
+                Message msg = new Message(Command.MoveChecker, parm);
                 try {
                     cli.sendToServer(msg);
-                    
+
 
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
-              
-            }
-            else
+
+            } else {
                 isDragging = true;
-               
+            }
+
         }
         
     }//GEN-LAST:event_formMouseReleased
 
     private void formMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMousePressed
-             
-        if(allowMovement)
-        {
+
+        if (allowMovement) {
             Checker[] checkers = gs.getCheckers();
 
-            for(int i =0;i< 30;i++)
-            {
-                if(checkers[i].hitTest(evt.getX(),evt.getY()))
-                {
-                    if(checkers[i].pointID < 26)
-                    {
+            for (int i = 0; i < 30; i++) {
+                if (checkers[i].hitTest(evt.getX(), evt.getY())) {
+                    if (checkers[i].pointID < 26) {
                         currChecker = checkers[i];
                         currCheckerID = i;
                         break;
                     }
                 }
             }
-        } 
-        else
+        } else {
             System.out.println("Board Disabled");
+        }
     }//GEN-LAST:event_formMousePressed
-    
+
     public void updateGameState(GameState gs) {
         this.gs = gs;
         repaint();
     }
-            
-            
+
+    @Override
     public void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
-              
-        
-        Graphics2D g = (Graphics2D)graphics;
-        
+
+
+        Graphics2D g = (Graphics2D) graphics;
+
         int width = this.getBounds().width;
         int height = this.getBounds().height;
-        
-        
+
+
         //Background Rectangle
         g.setStroke(new BasicStroke(1));
-        g.setColor(new Color(242,244,179));
-        g.setPaint(new Color(242,244,179));
+        g.setColor(new Color(242, 244, 179));
+        g.setPaint(new Color(242, 244, 179));
         g.fillRect(0, 0, width, height);
-        
-        g.setColor(new Color(128,0,0));
+
+        g.setColor(new Color(128, 0, 0));
         //Top Border
         int x = 0;
         int y = 0;
         int w = width;
-        int h = (int) (0.02*height) ;
-        g.fillRect(x,y,w,h);
-        
+        int h = (int) (0.02 * height);
+        g.fillRect(x, y, w, h);
+
         //Left Border
         x = 0;
         y = 0;
-        w = (int)(0.02 * width);
+        w = (int) (0.02 * width);
         h = height;
-        g.fillRect(x,y,w,h);
-        
+        g.fillRect(x, y, w, h);
+
         //Bottom Border
         x = 0;
-        y = height - (int) (0.02*height);
+        y = height - (int) (0.02 * height);
         w = width;
-        h = (int) (0.02*height) ;
-        g.fillRect(x,y,w,h);
-        
+        h = (int) (0.02 * height);
+        g.fillRect(x, y, w, h);
+
         //Bar
-        
-        x = (int)(0.44 * width);
+
+        x = (int) (0.44 * width);
         y = 0;
-        w = (int)(0.06 * width);
+        w = (int) (0.06 * width);
         h = height;
-        g.fillRect(x,y,w,h);
-        
-        baseX[24] = x + (int)(w /2);
-        baseX[25] = x + (int)(w /2);
-        
-        
+        g.fillRect(x, y, w, h);
+
+        baseX[24] = x + (int) (w / 2);
+        baseX[25] = x + (int) (w / 2);
+
+
         //Bear OFF Bar
-        x = (int)(0.92 * width);
-        w = (int)(0.08 * width);
-        g.fillRect(x,y,w,h);
-        baseX[26] =  x + (int)(w /2);
-        baseX[27] =  x + (int)(w /2);
+        x = (int) (0.92 * width);
+        w = (int) (0.08 * width);
+        g.fillRect(x, y, w, h);
+        baseX[26] = x + (int) (w / 2);
+        baseX[27] = x + (int) (w / 2);
 
         plotTriangleQuadrant(g, 1);
         plotTriangleQuadrant(g, 2);
         plotTriangleQuadrant(g, 3);
         plotTriangleQuadrant(g, 4);
-        
+
         //Now Put Checker        
         Checker[] checkers = gs.getCheckers();
         boolean drawDyna = false;
-        for(int i=0;i<30;i++)
-        {            
-            if(currChecker == null)
-               drawChecker(g,checkers[i]);
-            else
-            {
-                if(currCheckerID != i)
-                    drawChecker(g,checkers[i]);
-                else
+        for (int i = 0; i < 30; i++) {
+            if (currChecker == null) {
+                drawChecker(g, checkers[i]);
+            } else {
+                if (currCheckerID != i) {
+                    drawChecker(g, checkers[i]);
+                } else {
                     drawDyna = true;
-            }                
-                
-            
+                }
+            }
+
+
         }
-        
-        if(drawDyna)           
-         drawDynamicChecker(g,currChecker);
-           repaint(); 
+
+        if (drawDyna) {
+            drawDynamicChecker(g, currChecker);
+        }
+        repaint();
     }
-    
+
     private void plotTriangleQuadrant(Graphics2D g, int quadrantID) {
-        
-        Color[] triColor= new Color[2];
+
+        Color[] triColor = new Color[2];
         int offset = 0;
         int baseIndex = 0;
         int val = 0;
-        if(quadrantID > 2)
-        {
-            if(quadrantID == 3)            
-            {
-                offset = (int)(0.02 * this.getBounds().width);
+        if (quadrantID > 2) {
+            if (quadrantID == 3) {
+                offset = (int) (0.02 * this.getBounds().width);
                 baseIndex = 11;
-                
-            }
-            else
-            {
+
+            } else {
                 baseIndex = 5;
-                offset = (int)(0.5 * this.getBounds().width);                
+                offset = (int) (0.5 * this.getBounds().width);
             }
             val = -1;
-            triColor[0] = new Color(6,186,196);
-            triColor[1]= new Color(193,116,0);        
-        }
-        else
-        {
-            if(quadrantID == 2)        
-            {
-                offset = (int)(0.02 * this.getBounds().width);
-                baseIndex = 12;                
-            }
-            else
-            {
+            triColor[0] = new Color(6, 186, 196);
+            triColor[1] = new Color(193, 116, 0);
+        } else {
+            if (quadrantID == 2) {
+                offset = (int) (0.02 * this.getBounds().width);
+                baseIndex = 12;
+            } else {
                 baseIndex = 18;
-                offset = (int)(0.5 * this.getBounds().width);                
+                offset = (int) (0.5 * this.getBounds().width);
             }
             val = 1;
-            triColor[0] = new Color(193,116,0);
-            triColor[1]= new Color(6,186,196);            
-           
+            triColor[0] = new Color(193, 116, 0);
+            triColor[1] = new Color(6, 186, 196);
+
         }
-        
+
         int tX1, tY1, tX2, tY2, tX3, tY3;
-        tW = (int)((0.42*this.getBounds().width)/6);
-        tH = (int)(0.38 * this.getBounds().height);
-        
-        for(int i=0;i<6;i++)
-        {
+        tW = (int) ((0.42 * this.getBounds().width) / 6);
+        tH = (int) (0.38 * this.getBounds().height);
+
+        for (int i = 0; i < 6; i++) {
             tX1 = offset + i * tW;
-            tX2 = tX1 + (int)(tW/2);
+            tX2 = tX1 + (int) (tW / 2);
             tX3 = tX1 + tW;
-            
+
             baseX[baseIndex] = tX2;
             baseIndex += val;
-            
-            if(quadrantID > 2)
-            {
-                tY1 = this.getBounds().height - (int)(0.02 * this.getBounds().height);           
+
+            if (quadrantID > 2) {
+                tY1 = this.getBounds().height - (int) (0.02 * this.getBounds().height);
                 tY2 = this.getBounds().height - tH;
-            }
-            else
-            {
-                tY1 = (int)(0.02 * this.getBounds().height);            
+            } else {
+                tY1 = (int) (0.02 * this.getBounds().height);
                 tY2 = tH;
             }
-            
+
             tY3 = tY1;
 
             Polygon tri = new Polygon();
-            tri.addPoint(tX1,tY1);
-            tri.addPoint(tX2,tY2);
-            tri.addPoint(tX3,tY3);
+            tri.addPoint(tX1, tY1);
+            tri.addPoint(tX2, tY2);
+            tri.addPoint(tX3, tY3);
 
             int colIndex = i % 2;
-            if(cli != null && cli.playerID == 1)
+            if (cli != null && cli.playerID == 1) {
                 colIndex = 1 - colIndex;
+            }
             g.setPaint(triColor[colIndex]);
             g.fillPolygon(tri);
         }
     }
-    
-    
+
     private void drawDynamicChecker(Graphics2D g, Checker ch) {
         Color[] playerColor = new Color[2];
-        playerColor[0] = new Color(58,118,118);
-                
-        playerColor[1] = new Color(255,167,79);
-        int cH = (int)((0.38 * this.getBounds().height) / 5);
-        int radius = (int)(cH /2);
+        playerColor[0] = new Color(58, 118, 118);
+
+        playerColor[1] = new Color(255, 167, 79);
+        int cH = (int) ((0.38 * this.getBounds().height) / 5);
+        int radius = (int) (cH / 2);
         g.setPaint(Color.BLACK);
-        g.fillOval(dynaX - radius,dynaY - radius,cH,cH);
-        
-        g.setPaint(playerColor[ch.ownerID]);        
-        g.fillOval(dynaX - radius-2,dynaY - radius - 2,cH,cH);
-        ch.x = dynaX - radius-2;
+        g.fillOval(dynaX - radius, dynaY - radius, cH, cH);
+
+        g.setPaint(playerColor[ch.ownerID]);
+        g.fillOval(dynaX - radius - 2, dynaY - radius - 2, cH, cH);
+        ch.x = dynaX - radius - 2;
         ch.y = dynaY - radius - 2;
         ch.w = cH;
     }
-    
+
     private void drawChecker(Graphics2D g, Checker ch) {
         //calculate X and Y of checker 
-        Color player1 = new Color(58,118,118);
-        Color player2 = new Color(255,167,79);
-        
+        Color player1 = new Color(58, 118, 118);
+        Color player2 = new Color(255, 167, 79);
+
         int newPointID = getProperPointID(ch.pointID);
-       
-        
-        int cH = (int)((0.38 * this.getBounds().height) / 5);
-        int cX = baseX[newPointID];;
-        
-        int radius = (int)(cH /2);
+
+
+        int cH = (int) ((0.38 * this.getBounds().height) / 5);
+        int cX = baseX[newPointID];
+
+        int radius = (int) (cH / 2);
         int baseY = 0;
         int sign = 1;
         int sep = 3;
-        if(newPointID < 12 || newPointID == 24 || newPointID == 26)
-        {
-            baseY = this.getBounds().height - (int)(0.02 * this.getBounds().height) - radius;
+        if (newPointID < 12 || newPointID == 24 || newPointID == 26) {
+            baseY = this.getBounds().height - (int) (0.02 * this.getBounds().height) - radius;
             sign = -1;
             sep = -3;
+        } else {
+            baseY = (int) (0.02 * this.getBounds().height) + radius;
         }
-        else
-            baseY = (int)(0.02 * this.getBounds().height) + radius;
-        
-        int cY = baseY + sign* cH * ch.pos;
-        
-        if(ch.pos > 0)
+
+        int cY = baseY + sign * cH * ch.pos;
+
+        if (ch.pos > 0) {
             cY += ch.pos * sep;
-        
-        g.setPaint(Color.BLACK);
-        g.fillOval(cX - radius,cY - radius,cH,cH);
-        
-        if(ch.ownerID == 0)
-            g.setPaint(player1);
-        else
-            g.setPaint(player2);
-        
-        int cW = cH;
-        if(cli != null)
-        {
-            if(gs.getCheckerCount(ch.pointID,ch.ownerID) > 6)
-                cH = (6 * cW) / gs.getCheckerCount(ch.pointID,ch.ownerID);
         }
-        
-        g.fillOval(cX - radius-2,cY - radius + (sign*2),cW,cH);
-        ch.x = cX -radius -2;
-        ch.y = cY - radius + (sign*2);
+
+        g.setPaint(Color.BLACK);
+        g.fillOval(cX - radius, cY - radius, cH, cH);
+
+        if (ch.ownerID == 0) {
+            g.setPaint(player1);
+        } else {
+            g.setPaint(player2);
+        }
+
+        int cW = cH;
+        if (cli != null) {
+            if (gs.getCheckerCount(ch.pointID, ch.ownerID) > 6) {
+                cH = (6 * cW) / gs.getCheckerCount(ch.pointID, ch.ownerID);
+            }
+        }
+
+        g.fillOval(cX - radius - 2, cY - radius + (sign * 2), cW, cH);
+        ch.x = cX - radius - 2;
+        ch.y = cY - radius + (sign * 2);
         ch.w = cW;
     }
-    
+
     private int getProperPointID(int id) {
-        if(cli != null && cli.playerID == 0)        
+        if (cli != null && cli.playerID == 0) {
             return id;
-        else
-        {
-            if(id == 24 || id == 26)
-                return id+1;
-            else if(id==25 || id == 27)
-                return id-1;
-            else 
+        } else {
+            if (id == 24 || id == 26) {
+                return id + 1;
+            } else if (id == 25 || id == 27) {
+                return id - 1;
+            } else {
                 return 23 - id;
+            }
         }
-        
+
     }
 
     private int getPointID(int x, int y) {
         int h = this.getBounds().height;
-        
-        for(int i=0;i<28;i++)
-        {
-            if( x >= (baseX[i] - (int)(tW/2))  && x <= (baseX[i] + (int)(tW/2)))
-            {
-                if(i<12)
-                {
-                   if(y <= h  && y >= (h-tH))                   
-                      return getProperPointID(i);
-                   
-                }
-                else
-                {
-                    if(y <= tH && y >= 0)
+
+        for (int i = 0; i < 28; i++) {
+            if (x >= (baseX[i] - (int) (tW / 2)) && x <= (baseX[i] + (int) (tW / 2))) {
+                if (i < 12) {
+                    if (y <= h && y >= (h - tH)) {
                         return getProperPointID(i);
-                }   
+                    }
+
+                } else {
+                    if (y <= tH && y >= 0) {
+                        return getProperPointID(i);
+                    }
+                }
             }
         }
         return -1;
     }
-    
-    
-    
-    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
-    
 }

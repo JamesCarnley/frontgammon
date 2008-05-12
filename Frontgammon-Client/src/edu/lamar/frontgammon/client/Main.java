@@ -21,18 +21,14 @@
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
  */
-
 package edu.lamar.frontgammon.client;
 
 import edu.lamar.frontgammon.client.gui.SignIn;
-
 import java.io.IOException;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-
-
-
 import edu.lamar.frontgammon.client.gui.*;
+
 /**
  *
  * @author James
@@ -40,18 +36,18 @@ import edu.lamar.frontgammon.client.gui.*;
  *
  */
 public class Main {
+
     MessageBox mBox;
     Client cli;
     GameGUI ggui;
-    
-    
+
     /** Creates a new instance of Main */
     public Main(String hostname, int port) {
-        mBox = new MessageBox();        
-        ggui = new GameGUI(); 
+        mBox = new MessageBox();
+        ggui = new GameGUI();
         ggui.setVisible(false);
-        cli = new Client(hostname,port);
-        try {            
+        cli = new Client(hostname, port);
+        try {
             cli.openConnection();
             SignIn signin = new SignIn();
             cli.setSignIn(signin);
@@ -60,15 +56,17 @@ public class Main {
             signin.msgBox = mBox;
             signin.ggui = ggui;
             signin.setVisible(true);
-            
+
         } catch (IOException ex) {
-           ggui.dispose();           
-           mBox.showMessage("Error","Can't Open Connection to " + cli.getHost());
-           while(mBox.isVisible());
-           mBox.dispose();           
+            ggui.dispose();
+            mBox.showMessage("Error", "Can't Open Connection to " + cli.getHost());
+            while (mBox.isVisible()) {
+                ;
+            }
+            mBox.dispose();
         }
     }
-    
+
     /**
      * @param args the command line arguments
      */
@@ -87,17 +85,14 @@ public class Main {
         } catch (UnsupportedLookAndFeelException ex) {
             ex.printStackTrace();
         }
-        
-        if(args.length > 0)
-        {
+
+        if (args.length > 0) {
             hostname = args[0];
-            if(args.length > 1)
+            if (args.length > 1) {
                 port = Integer.parseInt(args[1]);
+            }
         }
-        
-        Main cl = new Main(hostname,port);
+
+        Main cl = new Main(hostname, port);
     }
-    
-    
-    
 }

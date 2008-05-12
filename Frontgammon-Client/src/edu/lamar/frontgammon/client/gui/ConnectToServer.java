@@ -18,7 +18,6 @@
  *
  * Created on October 17, 2007, 5:42 PM
  */
-
 package edu.lamar.frontgammon.client.gui;
 
 /**
@@ -27,12 +26,12 @@ package edu.lamar.frontgammon.client.gui;
  * Modified By Nitesh
  */
 public class ConnectToServer extends javax.swing.JFrame {
-    
+
     /** Creates new form ConnectToServer */
     public ConnectToServer() {
         initComponents();
     }
-    
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -129,23 +128,23 @@ public class ConnectToServer extends javax.swing.JFrame {
         );
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
     private void connectButMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_connectButMouseClicked
         
         
     }//GEN-LAST:event_connectButMouseClicked
-    
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
+
+            @Override
             public void run() {
                 new ConnectToServer().setVisible(true);
             }
         });
     }
-    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton connectBut;
     private javax.swing.JTextField hostnameTextfield;
@@ -155,5 +154,4 @@ public class ConnectToServer extends javax.swing.JFrame {
     private javax.swing.JTextField portTextfield;
     private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables
-    
 }
